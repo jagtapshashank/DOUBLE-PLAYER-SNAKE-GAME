@@ -7,12 +7,19 @@ white = (255,255,255)
 red = (255,0,0)
 black = (0,0,0)
 green = (0,255,0)
+DARK_GRAY = (50, 50, 50)
+BLUE1 = (0, 102, 204)
+BLUE2 = (102, 178, 255)
+
+# Font
+FONT = p.font.Font(p.font.get_default_font(), 36)
 
 #Creating Window
 
-screenwidth = 1500
-screenheight = 900
+screenwidth = 1200
+screenheight = 800
 gameWindow = p.display.set_mode((screenwidth,screenheight))
+
 p.display.set_caption("My Snake Game using Python")
 font = p.font.SysFont(None,55)
 clock = p.time.Clock()
@@ -20,9 +27,23 @@ p.display.update()
 
 
 
-def text_screen(text, color, x, y):
-    screen_text = font.render(text, True, color)
-    gameWindow.blit(screen_text, [x, y])
+def text_screen(text, color, x, y, shadow_color=DARK_GRAY):
+    shadow_offset = 2
+    # Text shadow
+    shadow_text = FONT.render(text, True, shadow_color)
+    gameWindow.blit(shadow_text, (x + shadow_offset, y + shadow_offset))
+    # Main text
+    main_text = FONT.render(text, True, color)
+    gameWindow.blit(main_text, (x, y))
+
+# Gradient background function
+def gradient_background(color1, color2):
+    for y in range(screenheight):
+        color_ratio = y / screenheight
+        r = int(color1[0] * (1 - color_ratio) + color2[0] * color_ratio)
+        g = int(color1[1] * (1 - color_ratio) + color2[1] * color_ratio)
+        b = int(color1[2] * (1 - color_ratio) + color2[2] * color_ratio)
+        p.draw.line(gameWindow, (r, g, b), (0, y), (screenwidth, y))
 
 
 def plot_snake(gameWindow_, color_, snk_list_, Snake_size_):
@@ -33,7 +54,7 @@ def plot_snake(gameWindow_, color_, snk_list_, Snake_size_):
 def welcome():
     exit_game = False
     while not exit_game:
-        gameWindow.fill(white)
+        gradient_background(BLUE1, BLUE2)  # Blue gradient background
         text_screen("Welcome To Snake Game ", black, 300, 275)
         text_screen("Press Space Bar For Continue  ", black, 300, 320)
         for event in p.event.get():
@@ -50,7 +71,7 @@ def level1():
     # global speed2
     exit_game = False
     while not exit_game:
-        gameWindow.fill(white)
+        gradient_background(BLUE2, BLUE1)  # Blue gradient
         text_screen("Press 1 for EASY LEVEL   ", black, 300, 320)
         text_screen("Press 2 for MEDIUM LEVEL   ", black, 300, 360)
         text_screen("Press 3 for HARD LEVEL   ", black, 300, 400)
@@ -87,7 +108,7 @@ def level2():
     global speed2
     exit_game = False
     while not exit_game:
-        gameWindow.fill(white)
+        gradient_background(BLUE2, BLUE1)  # Blue gradient
         text_screen("Press 1 for EASY LEVEL   ", black, 300, 320)
         text_screen("Press 2 for MEDIUM LEVEL   ", black, 300, 360)
         text_screen("Press 3 for HARD LEVEL   ", black, 300, 400)
@@ -121,9 +142,9 @@ def colour():
     global color
     exit_game = False
     while not exit_game:
-        gameWindow.fill(white)
-        text_screen(" PRESS B FOR BLACK ... G FOR GREEN ... R FOR RED ", black, 300, 320)
-        text_screen(" PLAYER1 SNAKE COLOR  ", red , 300, 370)
+        gradient_background(BLUE2, BLUE1)  # Blue gradient
+        text_screen(" PRESS [B] FOR BLACK, [G] FOR GREEN, [R] FOR RED ", black, 200, 320)
+        text_screen(" PLAYER 1 SNAKE COLOR  ", DARK_GRAY , 300, 370)
         for event in p.event.get():
             # print(event)
             if event.type == p.QUIT:
@@ -147,9 +168,9 @@ def colour1():
     global color1
     exit_game = False
     while not exit_game:
-        gameWindow.fill(white)
-        text_screen(" PRESS B FOR BLACK ... G FOR GREEN ... R FOR RED ", black, 300, 320)
-        text_screen(" PLAYER1 SNAKE COLOR  ", red , 300, 370)
+        gradient_background(BLUE2, BLUE1)  # Blue gradient
+        text_screen(" PRESS [B] FOR BLACK, [G] FOR GREEN, [R] FOR RED ", black, 200, 320)
+        text_screen(" PLAYER 1 SNAKE COLOR  ", DARK_GRAY , 300, 370)
         for event in p.event.get():
             # print(event)
             if event.type == p.QUIT:
@@ -174,9 +195,9 @@ def colour2():
     global color2
     exit_game = False
     while not exit_game:
-        gameWindow.fill(white)
-        text_screen(" PRESS B FOR BLACK ... G FOR GREEN ... R FOR RED ", black, 300, 320)
-        text_screen(" PLAYER2 SNAKE COLOR  ", red, 300, 370)
+        gradient_background(BLUE2, BLUE1)  # Blue gradient
+        text_screen(" PRESS [B] FOR BLACK, [G] FOR GREEN, [R] FOR RED ", black, 200, 320)
+        text_screen(" PLAYER 2 SNAKE COLOR  ", DARK_GRAY, 300, 370)
         for event in p.event.get():
             # print(event)
             if event.type == p.QUIT:
@@ -209,8 +230,6 @@ def gameloop2():
     Snake_y2 = 30
     Snake_size2 = 20
     fps = 60
-    # speed1 = 10
-    # speed2 = 10
     score1 = 0
     score2 = 0
     velocity_x1=0
@@ -235,17 +254,13 @@ def gameloop2():
     while not exit_game:
 
         if game_over:
-
+            
             with open("Highscore_Double_1_1.txt", 'w') as f:
                 f.write(str(highscore1))
-            gameWindow.fill(white)
             with open("Highscore_Double_1_2.txt", 'w') as f:
                 f.write(str(highscore2))
-            gameWindow.fill(white)
-
-            text_screen("Game Over ... Plz Press Enter to Continue",red,100,200)
-
-
+            gradient_background((255, 0, 0), (128, 0, 0))  # Red gradient for game over
+            text_screen("Game Over! Press ENTER to Restart",white,100,200)
             text_screen(" PLAYER 1 SCORE " + str(score1), black, 300, 320)
             text_screen(" PLAYER 2 SCORE " + str(score2), black, 300, 370)
             for event in p.event.get():
@@ -312,10 +327,8 @@ def gameloop2():
                     highscore2 = score2
 
 
-            gameWindow.fill(white)
-            text_screen("Score1: " + str(score1)  +"\t Score2: " + str(score2)   +"\t High Score1:" + str(highscore1)   +"\tHigh Score2:" + str(highscore2)  ,red,5,5)
-            # text_screen("Score: " + str(score2) + " High Score:" + str(highscore2), red, 5, 5)
-            # p.draw.rect(gameWindow,black,[Snake_x,Snake_y,Snake_size,Snake_size])
+            gradient_background(BLUE2, BLUE1)  # Blue gradient
+            text_screen("Score1:" + str(score1)  +"  Score2:" + str(score2)   +"  High Score1:" + str(highscore1)   +"  High Score2:" + str(highscore2)  ,red,5,5)
             p.draw.rect(gameWindow,red,[food_x,food_y,Snake_size1,Snake_size1])
 
 
@@ -405,11 +418,11 @@ def gameloop1():
 
             with open("Highscore_Single.txt", 'w') as f:
                 f.write(str(highscore))
-            gameWindow.fill(white)
-
+            
+            gradient_background((255, 0, 0), (128, 0, 0))  # Red gradient for game over
+            text_screen("Game Over! Press ENTER to Restart",white,100,200)
             text_screen(" PLAYER 1 SCORE " + str(score), black, 300, 320)
 
-            text_screen("Game Over ... Plz Press Enter to Continue",red,100,200)
             for event in p.event.get():
                 if event.type == p.QUIT:
                     exit_game=True
@@ -452,7 +465,7 @@ def gameloop1():
 
 
 
-            gameWindow.fill(white)
+            gradient_background(BLUE2, BLUE1)  # Blue gradient
             text_screen("Score: " + str(score) + " High Score:"+ str(highscore),red,5,5)
 
             p.draw.rect(gameWindow,red,[food_x,food_y,Snake_size,Snake_size])
@@ -491,7 +504,7 @@ def gameloop1():
 def selectgame():
     exit_game = False
     while not exit_game:
-        gameWindow.fill(white)
+        gradient_background(BLUE2, BLUE1)  # Blue gradient
         text_screen(" PRESS 1 FOR SINGLE PLAYER ", black, 300, 320)
         text_screen(" PRESS 2 FOR DOUBLE PLAYER  ", black, 300, 370)
         for event in p.event.get():
